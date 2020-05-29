@@ -1,0 +1,149 @@
+{% extends "basic.html" %}
+{% load i18n %}
+{% load thumbnail %}
+{% load static %}
+
+
+{% block title %}{{ movies.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <img class="rounded" width="100%" src="{{ movies.poster }}" alt="">
+    </div>
+    <div class="col div">
+        <h3 class="">{{ movies.title }}</h3>
+        <ul class="">
+            <li>{% trans "Год" %}: {{ movies.year }}</li>
+            <li>{% trans "Страна" %} : {{ movies.country}}</li>
+            <li>{% trans "Слоган" %} : {{ movies.tagline }}</li>
+            <li>{% trans "Режиссер" %} :
+                {% for director in movies.directors.all %}
+                <a href="{{ director.get_absolute_url }}">{{ director.name }}</a>,
+                {% endfor %}
+            </li>
+            <li>{% trans "Актеры" %}:
+                {% for actor in movies.actors.all %}
+                <a href="{{ actor.get_absolute_url }}">{{ actor.name }},</a>
+                {% endfor %}
+            </li>
+            <li>{% trans "Жанр" %}:
+                {% for genre in movies.genre.all %}
+                {{ genre.name }},
+                {% endfor %}
+            </li>
+            <li>{% trans "Примьера в мире" %}: {{ movies.world_premiere }}</li>
+            <li>{% trans "Бюджет" %}: {{ movies.budget }} $</li>
+            <li>{% trans "Сборы в США" %}: {{ movies.fees_in_usa }} $</li>
+            <li>{% trans "Сборы в Мире" %}: {{ movies.fees_in_world}} $</li>
+            <li>
+                <form class="" action="{% url 'movie:add_rating' %}" name="rating"  method="post">
+                    <b> {% trans "Рейтинг" %}: </b>
+                    {% csrf_token %}
+                    <input type="hidden" name="movie" value="{{ movies.id }}">
+                    <span class="rating">
+                        {% for k, v in star_form.fields.star.choices %}
+                        <input id="rating{{ v }}" type="radio" name="star" value="{{ k }}">
+                        <label for="rating{{ v }}">{{ v }}</label>
+                        {% endfor %}
+                    </span>
+                </form>
+            </li>
+        </ul>
+    </div>
+    <div class="col">
+
+    </div>
+</div>
+<div class="row justify-content-md-center">
+    <div class="col m-3">
+        <p>{{ movies.description|safe }}</p>
+    </div>
+</div>
+<div class="row justify-content-center">
+    {% for image in movies.movieshots_set.all %}
+    <div class="col-sm-12 col-md-6 col-lg-5 col-xl-4">
+        <img class="rounded m-3" width="300" src="{{ image.image }}" alt="">
+    </div >
+    {% endfor %}
+</div>
+{% if movies.trailer %}
+<div class="row">
+    <div class="col">
+        <iframe class="m-3" src="{{ movies.trailer }}" width="500" height="300" allowfullscreen></iframe>
+    </div>
+</div>
+{% endif %}
+<div class="container">
+    <div class="row">
+        <div class="col-7 m-4 div rounded div">
+            <form class="m-2" action="{% url 'movie:add_review' movies.pk %}" method="post" class="text-white" id="formReview">
+                {% csrf_token %}
+                <input type="hidden" name="parent" id="contactparent" value="">
+                <div class="row">
+
+                <div class="form-group col-6">
+                    <label for="exampleFormControlInput1">Емэил</label>
+                    {{ form.email }}
+
+                </div>
+                <div class="form-group col-6">
+                    <label for="validationCustom01">Имя</label>
+                    {{ form.name }}
+
+                </div>
+                <div class="form-group col">
+                    <label for="exampleFormControlTextarea1">Сообщение</label>
+
+                    <textarea id="validationTextarea" name="message" rows="8" cols="80"></textarea>
+
+                </div>
+                {{ form.captcha }}
+                </div>
+                <button class="btn btn-outline-warning m-2" type="submit" name="button">Add</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    {% for review in movies.get_review %}
+    <div class="row">
+        <div  class="col-6 m-4 rounded div">
+            <div class="row">
+                <div class="col-3">
+                    <img class="m-3 rounded" width="100%" src="{% static 'images/empty.png' %}" alt="">
+                </div>
+                <div class="col-9">
+                    <h3>{{ review.name }}</h3>
+                    <p>{{ review.email }}</p>
+                    <p>{{ review.message }}</p>
+                    <a class="text-danger m-3" href="#formReview" onclick="addReview('{{ review.name}} ', '{{review.id}}')">Ответить</a>
+                </div>
+            </div>
+        </div >
+    </div>
+    <div class="row justify-content-center">
+        {% for rew in review.reviews_set.all %}
+            <div class="col-6 m-2 rounded div">
+                <div class="row">
+                    <div class="col-3">
+                        <img class="rounded m-3" width="100%" src="{% static 'images/empty.png' %}" alt="">
+                    </div>
+                    <div class="col-9">
+                        <h3>{{ rew.name }}</h3>
+                        <p>{{ rew.email }}</p>
+                        <p>{{ rew.message }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+<script>
+function addReview(name, id){
+    document.getElementById("contactparent").value = id;
+    document.getElementById("validationTextarea").innerText =`${name},`
+}
+</script>
+{% endblock %}

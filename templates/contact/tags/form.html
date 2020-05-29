@@ -1,0 +1,5 @@
+<form class="" action="{% url 'con:contact' %}" method="post">
+    {% csrf_token %}
+    {{ contact_form }}
+    <button class="btn btn-outline-warning m-2" type="submit" name="Send">Send</button>
+</form>

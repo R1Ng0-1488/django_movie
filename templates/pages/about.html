@@ -1,0 +1,10 @@
+{% extends 'basic.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "О сайте" %}{% endblock %}
+
+{% block content %}
+<div class="col m-3">
+    {{ flatpage.content }}
+</div>
+{% endblock %}

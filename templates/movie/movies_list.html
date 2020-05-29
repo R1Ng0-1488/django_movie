@@ -1,0 +1,23 @@
+{% extends "basic.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Фильмы" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        {% for movie in object_list %}
+        <div class="col-sm-12 col-md-4 col-lg-3 my-2">
+            <a class="" href="{{ movie.get_absolute_url }}"><img class="rounded" width="100%" src="{{ movie.poster }}" alt=""></a>
+            <h2 class="text-white"><a class="text-warning" href="{{ movie.get_absolute_url }}">{{ movie.title }}</a></h2>
+            <p class="text-danger">{{ movie.tagline }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col">
+            {% include "include/paginate.html" %}
+        </div>
+    </div>
+</div>
+{% endblock %}

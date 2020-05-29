@@ -1,0 +1,37 @@
+{% extends "basic.html" %}
+
+{% load static %}
+
+{% block title %}{{ actor.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-5">
+        {% if actor.image %}
+        <img class="rounded" width="100%" src="{{ actor.image }}" alt="">
+        {% endif %}
+    </div>
+    <div class="col-7">
+        <h4>{{ actor.name }}</h4>
+        <ul>
+            <li>{% trans "Возраст" %}: {{ actor.age }}</li>
+            <li>{% trnas "Режисер" %}:
+                {% for movie in actor.film_director.all %}
+                <a href="{{ movie.get_absolute_url }}">{{ movie.title }}</a>,
+                {% endfor %}
+            </li>
+            <li>{% trans "Актер" %}:
+                {% for movie in actor.film_actors.all %}
+                <a href="{{ movie.get_absolute_url }}">{{ movie.title }}</a>,
+                {% endfor %}
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <h4>{% trans "Биография" %}.</h4>
+        <p>{{ actor.description }}</p>
+    </div>
+</div>
+{% endblock %}

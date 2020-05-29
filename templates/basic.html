@@ -1,0 +1,147 @@
+<!doctype html>
+{% load static %}
+{% load static recaptcha3 %}
+{% load i18n %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <title>{% block title %}{% trans "Главная" %}{% endblock %}</title>
+    {% recaptcha_init %}
+    {% recaptcha_ready action_name='homepage' %}
+    <script type="text/javascript">
+
+    </script>
+  </head>
+  <body class="text-white">
+      <nav class="navbar navbar-expand-lg navbar-dark  sticky-top" style="background-color: black">
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+             <span class="navbar-toggler-icon"></span>
+         </button>
+
+         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+             <ul class="navbar-nav mr-auto">
+                 <li class="nav-item active">
+                     <a class="nav-link" href="{% url 'movie:movies' %}">{% trans "Главная" %}<span class="sr-only">(current)</span></a>
+                 </li>
+                 <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Категории" %}</a>
+                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                         {% for category in categories %}
+                         <a class="dropdown-item"   href="">{{ category.name }}</a>
+                         {% endfor %}
+                 </li>
+                 <li class="nav-item dropdown">
+                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Языки" %}</a>
+                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                         {% get_current_language as LANGUAGE_CODE %}
+                         {% get_available_languages as LANGUAGES %}
+                         {% get_language_info_list for LANGUAGES as languages %}
+                         {% for language in languages %}
+                         <a class="dropdown-item" href="/{{ language.code }}/">{{ language.name_local }}</a>
+                         {% endfor %}
+                     </div>
+                 </li>
+
+                 {% if user.is_authenticated %}
+                 <li class="nav-item">
+                     <a class="nav-link" href="{% url 'account_logout' %}">{% trans "Выход" %}</a>
+                 </li>
+                 <li class="nav-item">
+                     <a class="nav-link text-white" href="">{{ user.username }}</a>
+                 </li>
+
+                 {% else %}
+                 <li class="nav-item">
+                     <a class="nav-link" href="{% url 'account_login' %}">{% trans "Вход" %}</a>
+                 </li>
+                 <li class="nav-item">
+                     <a class="nav-link" href="{% url 'account_signup' %}">{% trans "Регистрация" %}</a>
+                 </li>
+                 {% endif %}
+             </ul>
+
+
+         </div>
+     </nav>
+    <img class="img-fluid" src="https://images8.alphacoders.com/100/thumb-1920-1003220.png" alt="Мстители">
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-sm-12 col-lg-3">
+                <h2 class="h-5">{% trans "Поиск фильма" %}</h2>
+                <form class="form-inline m-1" method="get" action="{% url 'movie:search' %}">
+                    <input class="form-control m-1 col" name="q" type="search" placeholder="Введите название..." aria-label="Search">
+                    <button class="btn btn-outline-success m-1" type="submit">{% trans "Поиск" %}</button>
+                </form>
+                <nav class="">
+                        <p class="h5  text-danger m-2"><strong>{% trans "Последние добавленные" %}</strong></p>
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="row">
+
+                                    {% for movie in last_movies %}
+                                    <div class="col-6">
+                                        <a href="{{ movie.get_absolute_url }}"><img width="100%" class="rounded m-2" src="{{ movie.poster }}" alt=""></a>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><a class="text-warning" href="{{ movie.get_absolute_url }}">{{ movie.title }}<span class="fa fa-angle-down" aria-hidden="true"></span></a></p>
+                                        <p class="text-danger">{{ movie.tagline }}</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    <form class="" action="{% url 'movie:filter' %}" method="get">
+                        <p class="h5  text-danger m-2"><strong>{% trans "Жанры" %}</strong></p>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row">
+                                    {% for genre in genres %}
+                                    <div class="col-12">
+                                        <input type="checkbox" class="" name="genre" value="{{ genre.id }}">
+                                        <span class="text-warning">{{ genre.name }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <p class="h5  text-danger m-2"><strong>{% trans "Год" %}</strong></p>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row">
+                                    {% for year in years %}
+                                    <div class="col-12">
+                                        <input type="checkbox" class="" name="year" value="{{ year.year }}" >
+                                        <span class="text-warning">{{ year.year }}</a></span>
+                                    </div>
+                                    {% endfor %}
+                                    <button class="btn btn-outline-warning m-2" type="submit">{% trans "Найти" %}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </nav>
+            </nav>
+            <div class="col-sm-12 col-lg-9">
+                <section>
+                    {% block content %}
+                    {% endblock %}
+                </section>
+            </div>
+        </div>
+    </div>
+    {% include 'include/footer.html' %}
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+  </body>
+</html>

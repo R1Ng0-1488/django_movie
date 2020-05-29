@@ -1,0 +1,14 @@
+{% load i18n %}
+<nav class="" aria-label="Page navigation example">
+<ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a style="background-color: black" class="page-link text-warning bg-black" href="?{{ q }}{{ genre }}{{ year }}page={{ page_obj.previous_page_number }}">{% trans "Прошлая" %}</a></li>
+    {% endif %}
+    {% for obj in page_obj.paginator.page_range %}
+    <li class="page-item "><a style="background-color: black" class="page-link text-warning bg-black" href="?{{ q }}{{ genre }}{{ year }}page={{ obj }}">{{ obj }}</a></li>
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <li class="page-item "><a style="background-color: black" class="page-link text-warning bg-black" href="?{{ q }}{{ genre }}{{ year }}&page={{ page_obj.next_page_number }}">{% trans "Дальше" %}</a></li>
+    {% endif %}
+</ul>
+</nav>
